@@ -1,0 +1,9 @@
+sample_id,group
+A1,control
+A2,control
+B1,treatment
+B2,treatment
+A1,A1
+B2,B2
+Test,
+,Test

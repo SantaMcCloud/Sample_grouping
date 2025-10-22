@@ -1,0 +1,15 @@
+command used: python reorder_reads.py test-data/ test_3
+
+📂 Found 4 forward and 4 reverse files.
+🧬 Merging 4 files into merged_R1.fastq.gz
+➕ Adding A1_forward.fastq.gz
+➕ Adding A2_forward.fastq
+➕ Adding B1_forward.fastq
+➕ Adding B2_forward.fastq
+🧬 Merging 4 files into merged_R2.fastq.gz
+➕ Adding A1_reverse.fastq.gz
+➕ Adding A2_reverse.fastq
+➕ Adding B1_reverse.fastq
+➕ Adding B2_reverse.fastq
+
+🎉 All merges complete!

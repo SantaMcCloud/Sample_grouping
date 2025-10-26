@@ -70,7 +70,7 @@ def merge_fastqs(metadata_file, fastq_dir, output_dir, group_col="group", sep=",
             print(f"  ➕ Adding {R1.name} and {R2.name} to group {group}")
             for src, dest in [(R1, out_R1), (R2, out_R2)]:
                 open_func = gzip.open if src.suffix == ".gz" else open
-                with open_func(src, "rb") as f_in, open(dest, "ab") as f_out:
+                with open_func(src, "rb") as f_in, gzip.open(dest, "ab") as f_out:
                     shutil.copyfileobj(f_in, f_out)
 
         print(f"✅ Done: {out_R1.name}, {out_R2.name}")
@@ -105,7 +105,7 @@ def merge_all(fastq_dir, output_dir, forward_suffix="_forward", reverse_suffix="
     for read in forward_reads:
         print(f"➕ Adding {read.name}")
         open_func = gzip.open if read.suffix == ".gz" else open
-        with open_func(read, "rb") as f_in, open(out_R1, "ab") as f_out:
+        with open_func(read, "rb") as f_in, gzip.open(out_R1, "ab") as f_out:
             shutil.copyfileobj(f_in, f_out)
 
     print(f"🧬 Merging {len(reverse_reads)} files into {out_R2.name}")
@@ -113,7 +113,7 @@ def merge_all(fastq_dir, output_dir, forward_suffix="_forward", reverse_suffix="
     for read in reverse_reads:
         print(f"➕ Adding {read.name}")
         open_func = gzip.open if read.suffix == ".gz" else open
-        with open_func(read, "rb") as f_in, open(out_R2, "ab") as f_out:
+        with open_func(read, "rb") as f_in, gzip.open(out_R2, "ab") as f_out:
             shutil.copyfileobj(f_in, f_out)
 
     print("\n🎉 All merges complete!")

@@ -1,4 +1,4 @@
-command used: python reorder_reads.py --metadata test-data/metadata_1.csv test-data/ test_1
+command used: python reorder_reads.py --metadata Tests/test-data/metadata_1.csv Tests/test-data/ Tests/test_1/
 
 In column 6 the followed values are set: sample_id = Test group = nan. Since one of both is NaN, this line will be ignored!
 In column 7 the followed values are set: sample_id = nan group = Test. Since one of both is NaN, this line will be ignored!

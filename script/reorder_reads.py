@@ -3,10 +3,11 @@ import shutil
 import pandas as pd
 from pathlib import Path
 import argparse
+from version import __version__
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Merge paired FASTQ files based on metadata; samples can belong to multiple groups."
+        description="Merge paired FASTQ (gzip possible) files based on metadata, samples can belong to multiple groups, or merge all reads together into one forward and one reverse read."
     )
     parser.add_argument("--metadata", help="Path to metadata CSV/TSV file. If no metadata is included all files in fastq_dir will be merged to one forward and one reverse read!")
     parser.add_argument("fastq_dir", help="Directory containing FASTQ files")
@@ -15,6 +16,7 @@ def parse_arguments():
     parser.add_argument("--sep", default=",", help="Column separator in metadata (default: ',')")
     parser.add_argument('--forward_suffix', default='_forward', help='Suffix to find the forward reads (default: _forward)')
     parser.add_argument('--reverse_suffix', default='_reverse', help='Suffix to find the reverse reads (default: _reverse)')
+    parser.add_argument('-v', '-V', '--version', action='version', version=__version__)
     parser.print_usage = parser.print_help
 
     args = parser.parse_args()
@@ -93,8 +95,8 @@ def merge_all(fastq_dir, output_dir, forward_suffix="_forward", reverse_suffix="
 
     print(f"📂 Found {len(forward_reads)} forward and {len(reverse_reads)} reverse files.")
 
-    out_R1 = output_dir / f"merged_R1.fastq.gz"
-    out_R2 = output_dir / f"merged_R2.fastq.gz"
+    out_R1 = output_dir / f"merged{forward_suffix}.fastq.gz"
+    out_R2 = output_dir / f"merged{reverse_suffix}.fastq.gz"
 
     for out_file in (out_R1, out_R2):
             if out_file.exists():

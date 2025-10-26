@@ -1,4 +1,4 @@
-command used: python reorder_reads.py --metadata Tests/test-data/metadata_2.csv Tests/test-data/ Tests/test_2/
+command used: python script/reorder_reads.py --metadata Tests/test-data/metadata_2.csv Tests/test-data/ Tests/test_2/
 
 🔹 Merging samples for group 'B2' -> ['B2']
   ➕ Adding B2_forward.fastq and B2_reverse.fastq to group B2

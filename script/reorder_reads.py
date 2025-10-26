@@ -5,25 +5,50 @@ from pathlib import Path
 import argparse
 from version import __version__
 
+
 def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Merge paired FASTQ (gzip possible) files based on metadata, samples can belong to multiple groups, or merge all reads together into one forward and one reverse read."
     )
-    parser.add_argument("--metadata", help="Path to metadata CSV/TSV file. If no metadata is included all files in fastq_dir will be merged to one forward and one reverse read!")
+    parser.add_argument(
+        "--metadata",
+        help="Path to metadata CSV/TSV file. If no metadata is included all files in fastq_dir will be merged to one forward and one reverse read!",
+    )
     parser.add_argument("fastq_dir", help="Directory containing FASTQ files")
     parser.add_argument("output_dir", help="Output directory for merged FASTQs")
-    parser.add_argument("--group_col", default="group", help="Metadata column name for grouping")
-    parser.add_argument("--sep", default=",", help="Column separator in metadata (default: ',')")
-    parser.add_argument('--forward_suffix', default='_forward', help='Suffix to find the forward reads (default: _forward)')
-    parser.add_argument('--reverse_suffix', default='_reverse', help='Suffix to find the reverse reads (default: _reverse)')
-    parser.add_argument('-v', '-V', '--version', action='version', version=__version__)
+    parser.add_argument(
+        "--group_col", default="group", help="Metadata column name for grouping"
+    )
+    parser.add_argument(
+        "--sep", default=",", help="Column separator in metadata (default: ',')"
+    )
+    parser.add_argument(
+        "--forward_suffix",
+        default="_forward",
+        help="Suffix to find the forward reads (default: _forward)",
+    )
+    parser.add_argument(
+        "--reverse_suffix",
+        default="_reverse",
+        help="Suffix to find the reverse reads (default: _reverse)",
+    )
+    parser.add_argument("-v", "-V", "--version", action="version", version=__version__)
     parser.print_usage = parser.print_help
 
     args = parser.parse_args()
 
     return args
 
-def merge_fastqs(metadata_file, fastq_dir, output_dir, group_col="group", sep=",", forward_suffix="_forward", reverse_suffix="_reverse"):
+
+def merge_fastqs(
+    metadata_file,
+    fastq_dir,
+    output_dir,
+    group_col="group",
+    sep=",",
+    forward_suffix="_forward",
+    reverse_suffix="_reverse",
+):
     fastq_dir = Path(fastq_dir)
     output_dir = Path(output_dir)
     output_dir.mkdir(exist_ok=True, parents=True)
@@ -32,10 +57,14 @@ def merge_fastqs(metadata_file, fastq_dir, output_dir, group_col="group", sep=",
     df = pd.read_csv(metadata_file, sep=sep)
     if "sample_id" not in df.columns or group_col not in df.columns:
         raise ValueError(f"Metadata must have columns: sample_id and {group_col}")
-    
+
     for i, (sample_id, group) in enumerate(df.values):
         if pd.isna(sample_id) or pd.isna(group):
-            print(f'In column {i} the followed values are set: sample_id = {sample_id} {group_col} = {group}. Since one of both is NaN, this line will be ignored!')
+            print(
+                f"In column {i} the followed values are set: sample_id = {sample_id} {
+                    group_col
+                } = {group}. Since one of both is NaN, this line will be ignored!"
+            )
 
     df.dropna(inplace=True)
 
@@ -79,12 +108,15 @@ def merge_fastqs(metadata_file, fastq_dir, output_dir, group_col="group", sep=",
 
     print("\n🎉 All merges complete!")
 
-def merge_all(fastq_dir, output_dir, forward_suffix="_forward", reverse_suffix="_reverse"):
+
+def merge_all(
+    fastq_dir, output_dir, forward_suffix="_forward", reverse_suffix="_reverse"
+):
     fastq_dir = Path(fastq_dir)
     output_dir = Path(output_dir)
     output_dir.mkdir(exist_ok=True, parents=True)
 
-    file_list = list(fastq_dir.glob('*.fastq.gz')) + list(fastq_dir.glob('*fastq'))
+    file_list = list(fastq_dir.glob("*.fastq.gz")) + list(fastq_dir.glob("*fastq"))
 
     if not file_list:
         print("❌ No FASTQ or FASTQ.GZ files found.")
@@ -93,14 +125,16 @@ def merge_all(fastq_dir, output_dir, forward_suffix="_forward", reverse_suffix="
     forward_reads = sorted([f for f in file_list if f"{forward_suffix}" in f.name])
     reverse_reads = sorted([f for f in file_list if f"{reverse_suffix}" in f.name])
 
-    print(f"📂 Found {len(forward_reads)} forward and {len(reverse_reads)} reverse files.")
+    print(
+        f"📂 Found {len(forward_reads)} forward and {len(reverse_reads)} reverse files."
+    )
 
     out_R1 = output_dir / f"merged{forward_suffix}.fastq.gz"
     out_R2 = output_dir / f"merged{reverse_suffix}.fastq.gz"
 
     for out_file in (out_R1, out_R2):
-            if out_file.exists():
-                out_file.unlink()
+        if out_file.exists():
+            out_file.unlink()
 
     print(f"🧬 Merging {len(forward_reads)} files into {out_R1.name}")
 
@@ -132,12 +166,12 @@ if __name__ == "__main__":
             group_col=args.group_col,
             sep=args.sep,
             forward_suffix=args.forward_suffix,
-            reverse_suffix=args.reverse_suffix
+            reverse_suffix=args.reverse_suffix,
         )
     else:
         merge_all(
             args.fastq_dir,
             args.output_dir,
             forward_suffix=args.forward_suffix,
-            reverse_suffix=args.reverse_suffix
+            reverse_suffix=args.reverse_suffix,
         )

@@ -2,7 +2,7 @@ import os
 from setuptools import setup, find_packages
 
 version = {}
-with open(os.path.join("scripts", "version.py")) as f:
+with open(os.path.join("script", "version.py")) as f:
     exec(f.read(), version)
 
 desc = "Merge paired FASTQ (gzip possible) files based on metadata, samples can belong to multiple groups, or merge all reads together into one forward and one reverse read."

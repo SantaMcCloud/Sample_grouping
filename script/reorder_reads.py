@@ -4,7 +4,7 @@ import shutil
 import pandas as pd
 from pathlib import Path
 import argparse
-from version import __version__
+from script.version import __version__
 
 
 def parse_arguments():

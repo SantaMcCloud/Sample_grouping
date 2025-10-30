@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import gzip
 import shutil
 import pandas as pd

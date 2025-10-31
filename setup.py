@@ -18,7 +18,7 @@ if os.path.isfile(requirement_path):
         install_requires = f.read().splitlines()
 
 setup(
-    name="Sample_grouping",
+    name="fastq-groupmerge",
     version=version["__version__"],
     install_requires=install_requires,
     description=desc,
@@ -28,6 +28,6 @@ setup(
     author_email="santino_faack@gmx.de",
     license="GPL-3.0",
     packages=find_packages(),
-    url="https://github.com/SantaMcCloud/Sample_grouping",
-    scripts=["script/reorder_reads.py"],
+    url="https://github.com/SantaMcCloud/fastq-groupmerge",
+    scripts=["script/fastq_groupmerge.py"],
 )

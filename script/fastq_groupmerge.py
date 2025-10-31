@@ -34,7 +34,11 @@ def parse_arguments():
         help="Suffix to find the reverse reads (default: _reverse)",
     )
     parser.add_argument("-v", "-V", "--version", action="version", version=__version__)
-    parser.add_argument("--single_reads", action="store_true", help="Set this flag if only single reads are inputted for this tool to merge!") 
+    parser.add_argument(
+        "--single_reads",
+        action="store_true",
+        help="Set this flag if only single reads are inputted for this tool to merge!",
+    )
     parser.print_usage = parser.print_help
 
     args = parser.parse_args()
@@ -156,12 +160,9 @@ def merge_all_pair(
 
     print("\n🎉 All merges complete!")
 
+
 def merge_fastqs_single(
-    metadata_file,
-    fastq_dir,
-    output_dir,
-    group_col="group",
-    sep=","
+    metadata_file, fastq_dir, output_dir, group_col="group", sep=","
 ):
     fastq_dir = Path(fastq_dir)
     output_dir = Path(output_dir)
@@ -219,9 +220,8 @@ def merge_fastqs_single(
 
     print("\n🎉 All merges complete!")
 
-def merge_all_single(
-    fastq_dir, output_dir
-):
+
+def merge_all_single(fastq_dir, output_dir):
     fastq_dir = Path(fastq_dir)
     output_dir = Path(output_dir)
     output_dir.mkdir(exist_ok=True, parents=True)
@@ -256,13 +256,10 @@ if __name__ == "__main__":
                 args.fastq_dir,
                 args.output_dir,
                 group_col=args.group_col,
-                sep=args.sep
-                )
+                sep=args.sep,
+            )
         else:
-            merge_all_single(
-                args.fastq_dir,
-                args.output_dir
-                )
+            merge_all_single(args.fastq_dir, args.output_dir)
     else:
         if args.metadata:
             merge_fastqs_pair(

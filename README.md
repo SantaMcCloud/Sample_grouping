@@ -1,4 +1,4 @@
-# Sample_grouping
+# fastq-groupmerge
 This tool was designed to create merged samples based of a metadata file.
 
 It is possible that a sample can be contained in multiple groups or in only one this has to be set in the metadatafile! For example here is the data from [metadata_2.csv](Test/test-data/metadata_2.csv):

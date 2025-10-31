@@ -1,0 +1,12 @@
+command used: python script/fastq_groupmerge.py Tests/test-data  Tests/test_single_2 --single_reads
+
+➕ Adding A1_forward.fastq.gz
+➕ Adding A1_reverse.fastq.gz
+➕ Adding A2_reverse.fastq
+➕ Adding B1_reverse.fastq
+➕ Adding B2_reverse.fastq
+➕ Adding B1_forward.fastq
+➕ Adding B2_forward.fastq
+➕ Adding A2_forward.fastq
+
+🎉 All merges complete!

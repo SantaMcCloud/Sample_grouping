@@ -1,0 +1,7 @@
+sample_id:group
+A1_forward:control
+A2_forward:control
+B1_reverse:treatment
+B2_reverse:treatment
+Test:
+:Test

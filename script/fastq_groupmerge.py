@@ -34,6 +34,7 @@ def parse_arguments():
         help="Suffix to find the reverse reads (default: _reverse)",
     )
     parser.add_argument("-v", "-V", "--version", action="version", version=__version__)
+    parser.add_argument("--single_reads", action="store_true", help="Set this flag if only single reads are inputted for this tool to merge!") 
     parser.print_usage = parser.print_help
 
     args = parser.parse_args()
@@ -41,7 +42,7 @@ def parse_arguments():
     return args
 
 
-def merge_fastqs(
+def merge_fastqs_pair(
     metadata_file,
     fastq_dir,
     output_dir,
@@ -75,8 +76,8 @@ def merge_fastqs(
     for group, samples in groups.items():
         print(f"\n🔹 Merging samples for group '{group}' -> {samples}")
 
-        out_R1 = output_dir / f"{group}_R1.fastq.gz"
-        out_R2 = output_dir / f"{group}_R2.fastq.gz"
+        out_R1 = output_dir / f"{group}{forward_suffix}.fastq.gz"
+        out_R2 = output_dir / f"{group}{reverse_suffix}.fastq.gz"
 
         # Remove existing output if exists
         for out_file in (out_R1, out_R2):
@@ -110,7 +111,7 @@ def merge_fastqs(
     print("\n🎉 All merges complete!")
 
 
-def merge_all(
+def merge_all_pair(
     fastq_dir, output_dir, forward_suffix="_forward", reverse_suffix="_reverse"
 ):
     fastq_dir = Path(fastq_dir)
@@ -155,24 +156,128 @@ def merge_all(
 
     print("\n🎉 All merges complete!")
 
+def merge_fastqs_single(
+    metadata_file,
+    fastq_dir,
+    output_dir,
+    group_col="group",
+    sep=","
+):
+    fastq_dir = Path(fastq_dir)
+    output_dir = Path(output_dir)
+    output_dir.mkdir(exist_ok=True, parents=True)
+
+    # Load metadata
+    df = pd.read_csv(metadata_file, sep=sep)
+    if "sample_id" not in df.columns or group_col not in df.columns:
+        raise ValueError(f"Metadata must have columns: sample_id and {group_col}")
+
+    for i, (sample_id, group) in enumerate(df.values):
+        if pd.isna(sample_id) or pd.isna(group):
+            print(
+                f"In column {i} the followed values are set: sample_id = {sample_id} {
+                    group_col
+                } = {group}. Since one of both is NaN, this line will be ignored!"
+            )
+
+    df.dropna(inplace=True)
+
+    # Each row maps one sample to one group
+    groups = df.groupby(group_col)["sample_id"].apply(list).to_dict()
+
+    for group, samples in groups.items():
+        print(f"\n🔹 Merging samples for group '{group}' -> {samples}")
+
+        out = output_dir / f"{group}.fastq.gz"
+
+        # Remove existing output if exists
+        if out.exists():
+            out.unlink()
+
+        # Merge each sample in this group
+        for sample in samples:
+            R_gz = fastq_dir / f"{sample}.fastq.gz"
+            R_no_gz = fastq_dir / f"{sample}.fastq"
+
+            print(R_gz.exists(), R_no_gz.exists())
+            # Determine which files exist
+            if R_gz.exists():
+                R_in = R_gz
+            elif R_no_gz.exists():
+                R_in = R_no_gz
+            else:
+                print(f"⚠️  Skipping {sample}: missing file.")
+                continue
+
+            print(f"  ➕ Adding {R_in.name} to group {group}")
+            for src, dest in [(R_in, out)]:
+                open_func = gzip.open if src.suffix == ".gz" else open
+                with open_func(src, "rb") as f_in, gzip.open(dest, "ab") as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+
+        print(f"✅ Done: {out.name}")
+
+    print("\n🎉 All merges complete!")
+
+def merge_all_single(
+    fastq_dir, output_dir
+):
+    fastq_dir = Path(fastq_dir)
+    output_dir = Path(output_dir)
+    output_dir.mkdir(exist_ok=True, parents=True)
+
+    file_list = list(fastq_dir.glob("*.fastq.gz")) + list(fastq_dir.glob("*fastq"))
+
+    if not file_list:
+        print("❌ No FASTQ or FASTQ.GZ files found.")
+        return
+
+    out = output_dir / f"merged.fastq.gz"
+
+    if out.exists():
+        out.unlink()
+
+    for read in file_list:
+        print(f"➕ Adding {read.name}")
+        open_func = gzip.open if read.suffix == ".gz" else open
+        with open_func(read, "rb") as f_in, gzip.open(out, "ab") as f_out:
+            shutil.copyfileobj(f_in, f_out)
+
+    print("\n🎉 All merges complete!")
+
 
 if __name__ == "__main__":
     args = parse_arguments()
 
-    if args.metadata:
-        merge_fastqs(
-            args.metadata,
-            args.fastq_dir,
-            args.output_dir,
-            group_col=args.group_col,
-            sep=args.sep,
-            forward_suffix=args.forward_suffix,
-            reverse_suffix=args.reverse_suffix,
-        )
+    if args.single_reads:
+        if args.metadata:
+            merge_fastqs_single(
+                args.metadata,
+                args.fastq_dir,
+                args.output_dir,
+                group_col=args.group_col,
+                sep=args.sep
+                )
+        else:
+            merge_all_single(
+                args.fastq_dir,
+                args.output_dir
+                )
     else:
-        merge_all(
-            args.fastq_dir,
-            args.output_dir,
-            forward_suffix=args.forward_suffix,
-            reverse_suffix=args.reverse_suffix,
-        )
+        if args.metadata:
+            merge_fastqs_pair(
+                args.metadata,
+                args.fastq_dir,
+                args.output_dir,
+                group_col=args.group_col,
+                sep=args.sep,
+                forward_suffix=args.forward_suffix,
+                reverse_suffix=args.reverse_suffix,
+            )
+        else:
+            merge_all_pair(
+                args.fastq_dir,
+                args.output_dir,
+                forward_suffix=args.forward_suffix,
+                reverse_suffix=args.reverse_suffix,
+            )

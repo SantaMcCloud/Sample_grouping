@@ -1,0 +1,20 @@
+command used: python script/fastq_groupmerge.py Tests/test-data  Tests/test_single_1 --metadata Tests/test-data/metadata_single.csv --sep : --single_reads
+
+In column 4 the followed values are set: sample_id = Test group = nan. Since one of both is NaN, this line will be ignored!
+In column 5 the followed values are set: sample_id = nan group = Test. Since one of both is NaN, this line will be ignored!
+
+🔹 Merging samples for group 'control' -> ['A1_forward', 'A2_forward']
+True False
+  ➕ Adding A1_forward.fastq.gz to group control
+False True
+  ➕ Adding A2_forward.fastq to group control
+✅ Done: control.fastq.gz
+
+🔹 Merging samples for group 'treatment' -> ['B1_reverse', 'B2_reverse']
+False True
+  ➕ Adding B1_reverse.fastq to group treatment
+False True
+  ➕ Adding B2_reverse.fastq to group treatment
+✅ Done: treatment.fastq.gz
+
+🎉 All merges complete!

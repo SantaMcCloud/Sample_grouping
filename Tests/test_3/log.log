@@ -1,4 +1,4 @@
-command used: python script/reorder_reads.py Tests/test-data/ Tests/test_3/
+command used: python script/fastq_groupmerge.py Tests/test-data/ Tests/test_3/
 
 📂 Found 4 forward and 4 reverse files.
 🧬 Merging 4 files into merged_R1.fastq.gz
